@@ -1,0 +1,65 @@
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <time.h>
+#include <signal.h>
+#include <pthread.h>
+#include <dirent.h>
+#include <semaphore.h>
+
+
+
+
+
+
+int main(int argc, char *argv[]) {
+    int pipefd[2];
+    pipe(pipefd);
+   
+    for(int i = 1; i < argc; i++) {
+
+
+        id = fork();
+        if(id == 0) {
+            FILE *fp = fopen(argv[i], "rb");
+            double sum = 0;
+            double n = 0;
+            while(fread(&n, sizeof(double), 1, fp) != 0) {
+		 sum = sum + n;
+            }
+
+
+        write(pipefd[0], &sum, sizeof(double));
+
+        fclose(fp);
+        close(pipefd[0]);
+        exit(EXIT_SUCCESS);
+
+    
+        } else {
+            double p = 0;
+
+           for (int i = 0; i <argc; i++){
+		wait(NULL);
+            close(pipefd[0]);
+        
+                double childRes = 0;
+                read(pipefd[1], &childRes, sizeof(double));
+                p+=childRes;
+                close(pipefd[1]);;
+           }
+
+
+        printf("Sum = %.2lf\n", p);
+        }
+    }
+
+
+ return 0;
+}

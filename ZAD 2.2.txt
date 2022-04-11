@@ -1,0 +1,37 @@
+void processing(void *arg) {
+    char *name = (char*)(arg);
+    double sum = 0
+    FILE *fp = fopen(name, "rb");
+    double d;
+     while (fread(&d, sizeof(double), 1, fp) != 0){
+         sum+=d;
+    }
+    fclose(fd);
+    return sum;
+}
+
+
+int main(int argc, char *argv[]) {
+    
+     pthread_t threads[argc-1];
+    
+    for(int i = 0; i < argc - 1; i++) {
+        if(pthread_create(&threads[i], NULL, processing, argv[i + 1])) {
+            perror("Error at creating threads\n");
+            exit(-1);
+        }
+    }   
+
+    double sum = 0;
+    for(int i = 0; i < argc; i++) {
+        doublr a;
+        if(pthread_join(threads[i], &a)){
+            perror("Error at joining threads\n");
+            exit(-1);
+        }
+        sum+a;
+    }
+
+
+ return 0;
+}
